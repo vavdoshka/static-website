@@ -1,5 +1,5 @@
 import unittest
-from utils import text_node_to_html_code, split_nodes_delimeter, split_node, extract_markdown_images, extract_markdown_links, split_nodes_link, split_nodes_image, text_to_textnodes
+from utils import markdown_to_blocks, text_node_to_html_code, split_nodes_delimeter, split_node, extract_markdown_images, extract_markdown_links, split_nodes_link, split_nodes_image, text_to_textnodes
 from textnode import TextNode, TextType
 from htmlnode import LeafNode
 
@@ -305,6 +305,60 @@ class UtilsTests(unittest.TestCase):
         text = "This is **text with an *italic* word"
         with self.assertRaises(ValueError):
             text_to_textnodes(text)
+
+    # def test_markdown_to_blocks_base(self):
+    #     # text = "# block1\nblock2\n*block3\n*block3"
+    #     text = "# block1\nblock2\n*block3"
+    #     self.assertEqual(
+    #         markdown_to_blocks(text),
+    #         [
+    #             "# block1",
+    #             "block2",
+    #             "*block3"
+    #         ]
+    #     )
+
+    def test_markdown_to_blocks_with_lists(self):
+        text = "# block1\nblock2\n*block3\n*block3"
+        self.assertEqual(
+            markdown_to_blocks(text),
+            [
+                "# block1",
+                "block2",
+                "*block3\n*block3"
+            ]
+        )
+
+    def test_markdown_to_blocks_with_lists_excessive_newlines(self):
+        text = "# block1\n\nblock2\n*block3\n*block3\n\n"
+        self.assertEqual(
+            markdown_to_blocks(text),
+            [
+                "# block1",
+                "block2",
+                "*block3\n*block3"
+            ]
+        )
+
+    def test_markdown_to_blocks_with_lists_several_types(self):
+        text = """
+# This is a heading
+
+This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+
+* This is the first list item in a list block
+* This is a list item
+* This is another list item
+"""
+        self.assertEqual(
+            markdown_to_blocks(text),
+            [
+                "# This is a heading",
+                "This is a paragraph of text. It has some **bold** and *italic* words inside of it.",
+                "* This is the first list item in a list block\n* This is a list item\n* This is another list item"
+            ]
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
