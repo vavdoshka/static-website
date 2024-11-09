@@ -105,3 +105,15 @@ def split_nodes_image(old_nodes):
     patterns = extract_markdown_images(old_nodes[0].text)
     return split_nodes_regexp(old_nodes, extract_markdown_images, TextType.IMAGE)
 
+def text_to_textnodes(text):
+    result = [
+        TextNode(text, TextType.TEXT)
+    ]
+
+    result = split_nodes_delimeter(result, "**", TextType.BOLD)
+    result = split_nodes_delimeter(result, "*", TextType.ITALIC)
+    result = split_nodes_delimeter(result, "`", TextType.CODE)
+    result = split_nodes_image(result)
+    result = split_nodes_link(result)
+
+    return result

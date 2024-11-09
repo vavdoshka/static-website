@@ -1,5 +1,5 @@
 import unittest
-from utils import text_node_to_html_code, split_nodes_delimeter, split_node, extract_markdown_images, extract_markdown_links, split_nodes_link, split_nodes_image
+from utils import text_node_to_html_code, split_nodes_delimeter, split_node, extract_markdown_images, extract_markdown_links, split_nodes_link, split_nodes_image, text_to_textnodes
 from textnode import TextNode, TextType
 from htmlnode import LeafNode
 
@@ -259,7 +259,8 @@ class UtilsTests(unittest.TestCase):
              TextNode(" two times ", TextType.TEXT),
              TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
              TextNode("There is no url", TextType.TEXT),
-             TextNode("There is an image url ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)", TextType.TEXT),
+             TextNode(
+                 "There is an image url ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)", TextType.TEXT),
              TextNode("This is text with a link ", TextType.TEXT),
              TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
              TextNode(" two times ", TextType.TEXT),
@@ -276,10 +277,34 @@ class UtilsTests(unittest.TestCase):
         self.assertEqual(
             split_nodes_image([node]),
             [TextNode("This is text with a ", TextType.TEXT),
-             TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
+             TextNode("rick roll", TextType.IMAGE,
+                      "https://i.imgur.com/aKaOqIh.gif"),
              TextNode(" and", TextType.TEXT)]
         )
 
+    def test_text_to_textnodes(self):
+        text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        self.assertEqual(
+            text_to_textnodes(text),
+            [
+                TextNode("This is ", TextType.TEXT),
+                TextNode("text", TextType.BOLD),
+                TextNode(" with an ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" word and a ", TextType.TEXT),
+                TextNode("code block", TextType.CODE),
+                TextNode(" and an ", TextType.TEXT),
+                TextNode("obi wan image", TextType.IMAGE,
+                         "https://i.imgur.com/fJRm4Vk.jpeg"),
+                TextNode(" and a ", TextType.TEXT),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+            ]
+        )
+
+    def test_text_to_textnodes_error(self):
+        text = "This is **text with an *italic* word"
+        with self.assertRaises(ValueError):
+            text_to_textnodes(text)
 
 if __name__ == "__main__":
     unittest.main()
