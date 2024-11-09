@@ -21,26 +21,26 @@ def text_node_to_html_code(text_node):
             raise ValueError(f"unknow type: \"{text_node.text_type}\"")
 
 
-def split_node(string, delimeter, textType):
+def split_node(text, delimeter, textType):
     
     result = []
     stack = []
     tail_index = 0
-    for i in range(len(string)):
-        if string[i:i+len(delimeter)] == delimeter:
+    for i in range(len(text)):
+        if text[i:i+len(delimeter)] == delimeter:
             if not stack:
-                if string[tail_index:i]:
-                    result.append(TextNode(string[tail_index:i], TextType.TEXT))
+                if text[tail_index:i]:
+                    result.append(TextNode(text[tail_index:i], TextType.TEXT))
                 stack.append(i + len(delimeter))
                 tail_index = i + len(delimeter)
             else:
                 openning_pos = stack.pop()
-                result.append(TextNode(string[openning_pos:i], textType))
+                result.append(TextNode(text[openning_pos:i], textType))
                 tail_index = i + len(delimeter)
     if stack:
         raise ValueError(f"Delimeter {delimeter} is not properly closed")
-    if string[tail_index:]:
-        result.append(TextNode(string[tail_index:], TextType.TEXT))
+    if text[tail_index:]:
+        result.append(TextNode(text[tail_index:], TextType.TEXT))
     return result
 
 def split_nodes_delimeter(old_nodes, delimeter, text_type):
@@ -58,3 +58,50 @@ def extract_markdown_images(text):
 def extract_markdown_links(text):
     return re.findall("[^!]\[([^\]\[]+)\]\((\S+)\)", text)
             
+def split_link(text, patterns, textType):
+
+    if not text:
+        return []
+    
+    if not patterns:
+        return [TextNode(text, TextType.TEXT)]
+    
+    pattern = patterns[0]
+    template = ""
+    match textType:
+        case TextType.IMAGE:
+            template = f"![{pattern[0]}]({pattern[1]})"
+        case TextType.LINK:
+            template = f"[{pattern[0]}]({pattern[1]})"
+        case _:
+            raise ValueError(f"Unknown parsing type: {_}")
+    sections = text.split(template, 1)
+
+    if len(sections) == 1:
+        return [TextNode(text, TextType.TEXT)]
+
+    result = []
+
+    result.extend(split_link(sections[0], patterns[1:], textType))
+    result.append(TextNode(pattern[0], textType, pattern[1]))
+    result.extend(split_link(sections[1], patterns[1:], textType))
+
+    return result
+
+def split_nodes_regexp(old_nodes, regex_extractor, textType):
+    result = []
+    for node in old_nodes:
+        patterns = regex_extractor(node.text)
+        if not patterns:
+            result.append(node)
+        else:
+            result.extend(split_link(node.text, patterns, textType))
+    return result
+
+def split_nodes_link(old_nodes):
+    return split_nodes_regexp(old_nodes, extract_markdown_links, TextType.LINK)
+
+def split_nodes_image(old_nodes):
+    patterns = extract_markdown_images(old_nodes[0].text)
+    return split_nodes_regexp(old_nodes, extract_markdown_images, TextType.IMAGE)
+
