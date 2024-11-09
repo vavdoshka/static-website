@@ -1,8 +1,7 @@
 import unittest
-from utils import markdown_to_blocks, text_node_to_html_code, split_nodes_delimeter, split_node, extract_markdown_images, extract_markdown_links, split_nodes_link, split_nodes_image, text_to_textnodes
+from markdown import markdown_to_blocks, text_node_to_html_code, split_nodes_delimeter, split_node, extract_markdown_images, extract_markdown_links, split_nodes_link, split_nodes_image, text_to_textnodes, block_to_block_type, MarkdownBlockType
 from textnode import TextNode, TextType
 from htmlnode import LeafNode
-
 
 class UtilsTests(unittest.TestCase):
 
@@ -359,6 +358,70 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
             ]
         )
 
+    def test_block_to_block_heading(self):
+        block = "# heading"
+        self.assertEqual(block_to_block_type(block), MarkdownBlockType.HEADING)
+
+
+    def test_block_to_block_heading_broken_multiline(self):
+        block = "# heading1\n# heading2"
+        self.assertEqual(block_to_block_type(block), MarkdownBlockType.PARAGRAPH)
+
+    def test_block_to_block_heading_broken_many_levels(self):
+        for x in range(6):
+            self.assertEqual(block_to_block_type(f"{'#' * (x+1)} heading"), MarkdownBlockType.HEADING)
+
+    def test_block_to_block_heading_no_space(self):
+        block = "#######heading1"
+        self.assertEqual(block_to_block_type(block), MarkdownBlockType.PARAGRAPH)
+        
+    def test_block_to_block_heading_empty(self):
+        block = "# "
+        self.assertEqual(block_to_block_type(block), MarkdownBlockType.HEADING)
+
+    def test_block_to_block_code(self):
+        block = "```\n#code\n```"
+        self.assertEqual(block_to_block_type(block), MarkdownBlockType.CODE)
+
+    def test_block_to_block_code_incomplete(self):
+        block = "```\n#code"
+        self.assertEqual(block_to_block_type(block), MarkdownBlockType.PARAGRAPH)
+
+    def test_block_to_block_code_six_backticks(self):
+        block = "``````"
+        self.assertEqual(block_to_block_type(block), MarkdownBlockType.PARAGRAPH)
+
+    def test_block_to_block_quotes(self):
+        block = ">this is\n> some famous quote"
+        self.assertEqual(block_to_block_type(block), MarkdownBlockType.QUOTE)
+
+    def test_block_to_block_quotes_broken(self):
+        block = ">this is\n> some famous quote\nwhich is broken"
+        self.assertEqual(block_to_block_type(block), MarkdownBlockType.PARAGRAPH)
+
+    def test_block_to_block_quotes_empty(self):
+        block = ">"
+        self.assertEqual(block_to_block_type(block), MarkdownBlockType.QUOTE)
+
+    def test_block_to_block_ul(self):
+        block = "- one\n* two\n- three"
+        self.assertEqual(block_to_block_type(block), MarkdownBlockType.UNORDERED_LIST)
+
+    def test_block_to_block_ul_broken(self):
+        block = "- one\n* two\n-three"
+        self.assertEqual(block_to_block_type(block), MarkdownBlockType.PARAGRAPH)
+
+    def test_block_to_block_ol(self):
+        block = "1. one\n2. two\n3. three"
+        self.assertEqual(block_to_block_type(block), MarkdownBlockType.ORDERED_LIST)
+
+    def test_block_to_block_ol_broken(self):
+        block = "1. one\n2. two\n4.three"
+        self.assertEqual(block_to_block_type(block), MarkdownBlockType.PARAGRAPH)
+
+    def test_block_to_block_paragraph(self):
+        block = "simple paragraph"
+        self.assertEqual(block_to_block_type(block), MarkdownBlockType.PARAGRAPH)
 
 if __name__ == "__main__":
     unittest.main()

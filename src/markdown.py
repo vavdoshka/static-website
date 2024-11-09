@@ -2,6 +2,7 @@ import re
 
 from textnode import TextType, TextNode
 from htmlnode import LeafNode
+from enum import Enum
 
 def text_node_to_html_code(text_node):
     match text_node.text_type:
@@ -127,3 +128,53 @@ def markdown_to_blocks(markdown):
         block = block.strip()
         filtered_blocks.append(block)
     return filtered_blocks
+
+
+class MarkdownBlockType(Enum):
+    PARAGRAPH = "paragraph"
+    HEADING = "heading"
+    CODE = "code"
+    QUOTE = "quote"
+    UNORDERED_LIST = "unordered_list"
+    ORDERED_LIST = "ordered_list"
+
+
+def test_block_type(line, block_type, index=None):
+    match block_type:
+        case block_type.HEADING:
+            return index == 0 and (line.startswith("# ") or line.startswith("## ") or line.startswith("### ") or\
+                line.startswith("#### ") or line.startswith("##### ") or line.startswith("###### "))
+        case block_type.CODE:
+            return line.strip() == "```"
+        case block_type.QUOTE:
+            return line.startswith(">")
+        case block_type.UNORDERED_LIST:
+            return line.startswith("* ") or line.startswith("- ")
+        case block_type.ORDERED_LIST:
+            return line.startswith(f"{index + 1}. ")
+        case _:
+            raise ValueError(f"Unknown value: {_}")
+
+def block_to_block_type(block):
+    lines = block.split("\n")
+    block_type = None
+
+    if test_block_type(lines[0], MarkdownBlockType.CODE) and test_block_type(lines[-1], MarkdownBlockType.CODE):
+        return MarkdownBlockType.CODE
+    
+    if test_block_type(lines[0], MarkdownBlockType.HEADING, index=0):
+        block_type = MarkdownBlockType.HEADING
+    elif test_block_type(lines[0], MarkdownBlockType.QUOTE):
+        block_type = MarkdownBlockType.QUOTE
+    elif test_block_type(lines[0], MarkdownBlockType.UNORDERED_LIST):
+        block_type = MarkdownBlockType.UNORDERED_LIST
+    elif test_block_type(lines[0], MarkdownBlockType.ORDERED_LIST, index=0):
+        block_type = MarkdownBlockType.ORDERED_LIST
+    else:
+        return MarkdownBlockType.PARAGRAPH
+
+    for i, l in enumerate(lines):
+        if not test_block_type(l, block_type, index=i):
+            return MarkdownBlockType.PARAGRAPH
+        
+    return block_type
