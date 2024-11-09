@@ -16,6 +16,12 @@ class HTMLNode:
         for k,v in self.props.items():
             props.append(f"{k}=\"{v}\"")
         return " " + " ".join(props)
+    
+    def __eq__(self, value):
+        return value.tag == self.tag and\
+            value.value == self.value and\
+            value.children == self.children and\
+            value.props == self.props
 
     def __repr__(self):
         return f"HTMLNode({self.tag}, {self.value}, {self.children}, {self.props})"
