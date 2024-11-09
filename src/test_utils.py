@@ -306,20 +306,20 @@ class UtilsTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             text_to_textnodes(text)
 
-    # def test_markdown_to_blocks_base(self):
-    #     # text = "# block1\nblock2\n*block3\n*block3"
-    #     text = "# block1\nblock2\n*block3"
-    #     self.assertEqual(
-    #         markdown_to_blocks(text),
-    #         [
-    #             "# block1",
-    #             "block2",
-    #             "*block3"
-    #         ]
-    #     )
+    def test_markdown_to_blocks_base(self):
+        # text = "# block1\nblock2\n*block3\n*block3"
+        text = "# block1\n\nblock2\n\n*block3"
+        self.assertEqual(
+            markdown_to_blocks(text),
+            [
+                "# block1",
+                "block2",
+                "*block3"
+            ]
+        )
 
     def test_markdown_to_blocks_with_lists(self):
-        text = "# block1\nblock2\n*block3\n*block3"
+        text = "# block1\n\nblock2\n\n*block3\n*block3"
         self.assertEqual(
             markdown_to_blocks(text),
             [
@@ -330,7 +330,7 @@ class UtilsTests(unittest.TestCase):
         )
 
     def test_markdown_to_blocks_with_lists_excessive_newlines(self):
-        text = "# block1\n\nblock2\n*block3\n*block3\n\n"
+        text = "# block1\n\n\nblock2\n\n\n*block3\n*block3\n\n"
         self.assertEqual(
             markdown_to_blocks(text),
             [

@@ -119,31 +119,11 @@ def text_to_textnodes(text):
     return result
 
 def markdown_to_blocks(markdown):
-    splited_markdown = markdown.strip().split("\n")
-
-    blocks = []
-    stack = []
-
-    for string in splited_markdown:
-        if not string:
+    blocks = markdown.split("\n\n")
+    filtered_blocks = []
+    for block in blocks:
+        if block == "":
             continue
-
-        if string[0] == "*":
-            stack.append(string)
-        else:
-            if stack:
-                blocks.append("\n".join(stack))
-                stack = []
-            blocks.append(string)
-
-    if stack:
-        blocks.append("\n".join(stack))
-    
-    return blocks
-
-
-
-
-
-
-    return blocks
+        block = block.strip()
+        filtered_blocks.append(block)
+    return filtered_blocks
