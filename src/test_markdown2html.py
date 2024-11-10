@@ -33,8 +33,7 @@ class TestMarkdown2html(unittest.TestCase):
         block = "> some quote"
         self.assertEqual(
             block_to_html_node(block, MarkdownBlockType.QUOTE),
-            ParentNode("blockquote", [ParentNode(
-                "p", [LeafNode("", "some quote")])])
+            ParentNode("blockquote", [LeafNode("", "some quote")])
         )
 
     def test_block_quote_to_html_node_multiline_inline(self):
@@ -42,12 +41,11 @@ class TestMarkdown2html(unittest.TestCase):
         self.assertEqual(
             block_to_html_node(block, MarkdownBlockType.QUOTE),
             ParentNode("blockquote", [
-                ParentNode("p", [
                        LeafNode("", "some quote\ncontinues with "),
                        LeafNode("b", "bold"),
                        LeafNode("", " and "),
                        LeafNode("code", "code"),
-                       ])])
+                       ])
         )
 
     def test_block_heading_to_html_node_basic(self):
@@ -131,8 +129,6 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
 """
 
         nodes = markdown_to_html_node(text)
-        print(nodes)
-
         self.assertEqual(
             nodes,
             ParentNode("div", [

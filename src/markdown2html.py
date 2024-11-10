@@ -41,7 +41,7 @@ def block_to_quote(block):
     raw_lines = block.split("\n")
     quote = "\n".join([l.lstrip("> ").lstrip(">") for l in raw_lines])
     children = text_to_children(quote)
-    return ParentNode("blockquote", [ParentNode("p", children)])
+    return ParentNode("blockquote", children)
 
 def block_to_heading(block):
     # get number of h, strip, pass to text_to_children, wrap with h tag
