@@ -33,10 +33,10 @@ class UtilsTests(unittest.TestCase):
             "a", "link", {"href": "https://boot.dev"}))
 
     def test_text_node_to_html_code_image(self):
-        node = TextNode("img", TextType.IMAGE,
-                        url="https://boot.dev/image.png")
+        node = TextNode("im", TextType.IMAGE,
+                        url="https://boot.dev/im.png")
         self.assertEqual(text_node_to_html_code(node), LeafNode(
-            "img", "", {"src": "https://boot.dev/image.png", "alt": "img"}))
+            "img", "", {"src": "https://boot.dev/im.png", "alt": "im"}))
 
     def test_split_node_one_occurence_middle(self):
         result = split_node("first `code` last", "`", TextType.CODE)

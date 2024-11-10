@@ -17,7 +17,7 @@ def text_node_to_html_code(text_node):
         case TextType.LINK:
             return LeafNode("a", text_node.text, {"href": text_node.url})
         case TextType.IMAGE:
-            return LeafNode("img", "", {"src": "https://boot.dev/image.png", "alt": "img"})
+            return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
         case _:
             raise ValueError(f"unknow type: \"{text_node.text_type}\"")
 
@@ -103,7 +103,6 @@ def split_nodes_link(old_nodes):
     return split_nodes_regexp(old_nodes, extract_markdown_links, TextType.LINK)
 
 def split_nodes_image(old_nodes):
-    patterns = extract_markdown_images(old_nodes[0].text)
     return split_nodes_regexp(old_nodes, extract_markdown_images, TextType.IMAGE)
 
 def text_to_textnodes(text):

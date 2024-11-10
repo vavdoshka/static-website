@@ -6,7 +6,7 @@ class HtmlNodeTests(unittest.TestCase):
 
     def test_repr(self):
         node = HTMLNode("tag", "value", "children", "props")
-        self.assertEqual(repr(node), "HTMLNode(tag, value, children, props)")
+        self.assertEqual(repr(node), "HTMLNode('tag', 'value', children, props)")
 
     def test_props_to_html(self):
         node = HTMLNode(props={"href": "https://www.boot.dev", "target": "_blank"})
