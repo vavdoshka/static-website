@@ -21,6 +21,28 @@ class TestMarkdown2html(unittest.TestCase):
                        LeafNode("b", "bold"), LeafNode("", " test")])
         )
 
+    def test_block_paragraph_only_url(self):
+        block = "[Back Home](/)"
+        node = block_to_html_node(block, MarkdownBlockType.PARAGRAPH)
+        print(node)
+        self.assertEqual(
+            node,
+            ParentNode("p", [
+                LeafNode("a", "Back Home", {"href": "/"})
+            ])
+        )
+
+    def test_block_paragraph_only_image(self):
+        block = "![LOTR image artistmonkeys](/images/rivendell.png)"
+        node = block_to_html_node(block, MarkdownBlockType.PARAGRAPH)
+        self.assertEqual(
+            node,
+            ParentNode("p", [
+                LeafNode("img", "", {
+                         "src": "/images/rivendell.png", "alt": "LOTR image artistmonkeys"}),
+            ])
+        )
+
     def test_block_code_to_html_node_basic(self):
         block = "```\n# some code block\n# more code\n```"
         self.assertEqual(
@@ -148,12 +170,14 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
                         LeafNode("", "This is the first list item with "),
                         LeafNode("a", "url", {"href": "https://www.boot.dev"}),
                         LeafNode("", " in a list block"),
-                        ]),
+                    ]),
                     ParentNode("li", [
                         LeafNode("", "This is a list item with "),
-                        LeafNode("img", "", {"src": "https://www.boot.dev/image.png", "alt": "image"}),
-                        ]),
-                    ParentNode("li", [LeafNode("", "This is another list item")])
+                        LeafNode(
+                            "img", "", {"src": "https://www.boot.dev/image.png", "alt": "image"}),
+                    ]),
+                    ParentNode(
+                        "li", [LeafNode("", "This is another list item")])
                 ])
             ])
         )

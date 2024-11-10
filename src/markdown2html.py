@@ -2,24 +2,6 @@ from enum import Enum
 from htmlnode import ParentNode, LeafNode
 
 from markdown import markdown_to_blocks, text_to_textnodes, block_to_block_type, MarkdownBlockType, text_node_to_html_code
-from textnode import TextType
-
-def text_type_to_html(text_type):
-    return {
-        TextType.BOLD: "b",
-        TextType.TEXT: "p",
-
-    }.get(text_type)
-
-
-# OL / UL
-
-# CODE - no touch
-
-# def convert_to_block_html_node(block, block_type):
-
-#     match block_type:
-#         case MarkdownBlockType.
 
 def text_to_children(text):
     text_nodes = text_to_textnodes(text)

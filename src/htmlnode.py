@@ -32,7 +32,7 @@ class LeafNode(HTMLNode):
         super().__init__(tag, value, props=props)
 
     def to_html(self):
-        if not self.value:
+        if not self.value and not self.props:
             raise ValueError
         if not self.tag:
             return self.value

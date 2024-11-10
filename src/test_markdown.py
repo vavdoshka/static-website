@@ -23,9 +23,9 @@ class UtilsTests(unittest.TestCase):
         self.assertEqual(text_node_to_html_code(node), LeafNode("i", "italic"))
 
     def test_text_node_to_html_code_code(self):
-        node = TextNode("code", TextType.CODE)
+        node = TextNode("somestuff", TextType.CODE)
         self.assertEqual(text_node_to_html_code(
-            node), LeafNode("code", "code"))
+            node), LeafNode("code", "somestuff"))
 
     def test_text_node_to_html_code_link(self):
         node = TextNode("link", TextType.LINK, url="https://boot.dev")
@@ -201,6 +201,16 @@ class UtilsTests(unittest.TestCase):
             [TextNode("This is text with a link ", TextType.TEXT),
              TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
              TextNode(" last", TextType.TEXT)]
+        )
+
+    def test_split_nodes_text_with_link_only(self):
+        node = TextNode(
+            "[to boot dev](https://www.boot.dev)",
+            TextType.TEXT,
+        )
+        self.assertEqual(
+            split_nodes_link([node]),
+            [TextNode("to boot dev", TextType.LINK, "https://www.boot.dev")]
         )
 
     def test_split_nodes_link_two_different(self):

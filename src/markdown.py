@@ -13,7 +13,7 @@ def text_node_to_html_code(text_node):
         case TextType.ITALIC:
             return LeafNode("i", text_node.text)
         case TextType.CODE:
-            return LeafNode("code", "code")
+            return LeafNode("code", text_node.text)
         case TextType.LINK:
             return LeafNode("a", text_node.text, {"href": text_node.url})
         case TextType.IMAGE:
@@ -57,7 +57,7 @@ def extract_markdown_images(text):
     return re.findall("!\[([^\]\[]+)\]\((\S+)\)", text)
 
 def extract_markdown_links(text):
-    return re.findall("[^!]\[([^\]\[]+)\]\((\S+)\)", text)
+    return re.findall("(?<!\!)\[([^\]\[]+)\]\((\S+)\)", text)
             
 def split_link(text, patterns, textType):
 

@@ -1,6 +1,6 @@
 import os
 import shutil
-from generator import generate_page
+from generator import generate_pages_recursive
 
 BASE_DIRECTORY = os.path.dirname(__file__)
 STATIC_ASSETS = os.path.join(BASE_DIRECTORY, "..", "static")
@@ -31,5 +31,7 @@ def copy_from_static_to_public():
 
 def main():
     copy_from_static_to_public()
-    generate_page(os.path.join(BASE_DIRECTORY, "..", "content", "index.md"), os.path.join(BASE_DIRECTORY, "..", "template.html"), os.path.join(PUBLIC_ASSETS, "index.html"))
+
+    generate_pages_recursive(os.path.join(BASE_DIRECTORY, "..", "content"), os.path.join(BASE_DIRECTORY, "..", "template.html"), os.path.join(PUBLIC_ASSETS))
+
 main()

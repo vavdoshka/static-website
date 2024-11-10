@@ -20,6 +20,10 @@ class HtmlNodeTests(unittest.TestCase):
         node = LeafNode("a", "")
         self.assertRaises(ValueError, node.to_html)
 
+    def test_leaf_node_to_html_image(self):
+        node = LeafNode("img", "", {"src": "bla-bla"})
+        self.assertEqual(node.props_to_html(), " src=\"bla-bla\"")
+
     def test_leaf_node_to_html_no_tag(self):
         node = LeafNode("", "value")
         self.assertEqual(node.to_html(), "value")
